@@ -1,0 +1,6 @@
+node/
+git/
+*.zip
+*.exe
+*.7z
+setup_env.ps1
