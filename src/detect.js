@@ -1,8 +1,37 @@
 const fs = require('fs');
 const path = require('path');
 
-// Detect project type based on files present
+// Load harbor.json config if exists
+function loadHarborConfig(projectPath) {
+    const configPath = path.join(projectPath, 'harbor.json');
+    if (fs.existsSync(configPath)) {
+        try {
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            console.log(`[Harbor] Found harbor.json: ${config.name || 'unnamed'}`);
+            return config;
+        } catch (e) {
+            console.error('[Harbor] Error reading harbor.json:', e.message);
+            return null;
+        }
+    }
+    return null;
+}
+
+// Detect project type - uses harbor.json if present, otherwise auto-detects
 function detectProjectType(projectPath) {
+    // First, check for harbor.json
+    const harborConfig = loadHarborConfig(projectPath);
+    if (harborConfig) {
+        return {
+            type: harborConfig.framework || 'custom',
+            startCmd: harborConfig.start?.command || 'npm start',
+            buildCmd: harborConfig.build?.command || null,
+            port: harborConfig.start?.port || 3000,
+            harborConfig, // Include full config for advanced features
+        };
+    }
+
+    // Auto-detect based on files
     const files = fs.readdirSync(projectPath);
 
     // Check for package.json (Node.js project)
@@ -50,9 +79,11 @@ function detectProjectType(projectPath) {
     return { type: 'unknown', startCmd: null, buildCmd: null, port: 3000 };
 }
 
-// Get files to include in deployment (respects .gitignore patterns)
+// Get files to include (uses harbor.json ignore/include if present)
 function getDeployFiles(projectPath) {
-    const ignore = [
+    const harborConfig = loadHarborConfig(projectPath);
+
+    let ignore = [
         'node_modules',
         '.git',
         '.env',
@@ -64,6 +95,11 @@ function getDeployFiles(projectPath) {
         '.DS_Store',
         'Thumbs.db',
     ];
+
+    // Add custom ignores from harbor.json
+    if (harborConfig?.ignore) {
+        ignore = [...ignore, ...harborConfig.ignore];
+    }
 
     function shouldIgnore(name) {
         return ignore.some(pattern => {
@@ -101,4 +137,6 @@ function getDeployFiles(projectPath) {
 module.exports = {
     detectProjectType,
     getDeployFiles,
+    loadHarborConfig,
 };
+

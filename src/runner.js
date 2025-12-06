@@ -39,6 +39,7 @@ function extractDeployment(projectId, files) {
 // Run a project
 async function runProject(projectDir, projectInfo, onLog) {
     const log = onLog || console.log;
+    const harborConfig = projectInfo.harborConfig;
 
     // Install dependencies if needed
     if (fs.existsSync(path.join(projectDir, 'package.json'))) {
@@ -46,11 +47,35 @@ async function runProject(projectDir, projectInfo, onLog) {
         await runCommand('npm', ['install'], projectDir, log);
     }
 
+    // Run preBuild hook if exists
+    if (harborConfig?.hooks?.preBuild) {
+        log(`⚡ Running preBuild hook...`);
+        const [cmd, ...args] = harborConfig.hooks.preBuild.split(' ');
+        await runCommand(cmd, args, projectDir, log);
+    }
+
     // Run build if needed
     if (projectInfo.buildCmd) {
         log(`🔨 Building (${projectInfo.buildCmd})...`);
         const [buildCmd, ...buildArgs] = projectInfo.buildCmd.split(' ');
         await runCommand(buildCmd, buildArgs, projectDir, log);
+    }
+
+    // Run database commands if exists
+    if (harborConfig?.database?.commands) {
+        log(`🗄️ Running database setup...`);
+        for (const dbCmd of harborConfig.database.commands) {
+            log(`   ${dbCmd}`);
+            const [cmd, ...args] = dbCmd.split(' ');
+            await runCommand(cmd, args, projectDir, log);
+        }
+    }
+
+    // Run preStart hook if exists
+    if (harborConfig?.hooks?.preStart) {
+        log(`⚡ Running preStart hook...`);
+        const [cmd, ...args] = harborConfig.hooks.preStart.split(' ');
+        await runCommand(cmd, args, projectDir, log);
     }
 
     // Start the app

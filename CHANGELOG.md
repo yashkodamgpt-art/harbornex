@@ -2,6 +2,35 @@
 
 All notable changes to Harbor are documented here.
 
+## [0.2.0] - 2025-12-07
+
+### Added
+- **harbor.json Configuration**
+  - AI-friendly config file for deployments
+  - Spec docs and AI guide
+  - CLI reads harbor.json for build/start
+
+- **Dirac Resource System**
+  - Universal resource unit (D for humans, d for machines)
+  - Device capacity calculations
+  - Chunk/Pod presets
+
+- **Dashboard Enhancements**
+  - Project detail page with Frontend/Backend tabs
+  - Deploy Now button with simulated builds
+  - Build logs viewer (expandable)
+  - Environment variables (add/delete)
+  - New APIs: /deployments, /env
+
+- **Database**
+  - EnvVariable model for env vars
+  - Enhanced Deployment with buildLogs, branch, duration
+
+- **Documentation**
+  - VISION.md - Harbor concept
+  - DIRAC-SYSTEM.md - Resource specs
+  - FEATURE-REFERENCE.md - Vercel/Supabase comparison
+
 ## [0.1.0] - 2024-12-06
 
 ### Added
@@ -38,3 +67,4 @@ All notable changes to Harbor are documented here.
 ### Planned
 - P2P Pods for decentralized hosting
 - Browser extension for local serving
+
