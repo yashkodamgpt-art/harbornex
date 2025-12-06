@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HarborFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+      -webkit-app-region: drag;
+    }
+    
+    .titlebar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .titlebar h1 {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .close-btn {
+      -webkit-app-region: no-drag;
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    
+    .close-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+    
+    .container {
+      padding: 24px;
+      -webkit-app-region: no-drag;
+    }
+    
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status-badge.offline {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    
+    h2 { font-size: 18px; margin-bottom: 12px; }
+    h3 { font-size: 14px; color: #94a3b8; margin-bottom: 8px; }
+    
+    .input-group { margin-bottom: 16px; }
+    
+    label {
+      display: block;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary:hover { background: #2563eb; }
+    
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      margin-top: 8px;
+    }
+    
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    
+    .device-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .device-icon { font-size: 24px; }
+    .device-name { font-weight: 500; }
+    .device-status { font-size: 12px; color: #94a3b8; }
+    
+    .hidden { display: none; }
+    
+    .message {
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+    
+    .message.success { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .message.error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="titlebar">
+    <h1>⚓ HarborFlow</h1>
+    <button class="close-btn" onclick="window.close()">✕</button>
+  </div>
+  
+  <!-- Login Screen -->
+  <div id="login-screen" class="container">
+    <div class="card">
+      <h2>Connect to Harbor</h2>
+      <p style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">
+        Enter your API key from the Harbor dashboard
+      </p>
+      
+      <div class="input-group">
+        <label>API Key</label>
+        <input type="text" id="api-key" placeholder="cm0...">
+      </div>
+      
+      <button class="btn btn-primary" onclick="connect()">Connect Device</button>
+      <div id="login-message" class="message hidden"></div>
+    </div>
+  </div>
+  
+  <!-- Dashboard Screen -->
+  <div id="dashboard-screen" class="container hidden">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2>Your Device</h2>
+        <span id="status-badge" class="status-badge">
+          <span class="status-dot"></span>
+          Online
+        </span>
+      </div>
+      
+      <div class="device-info">
+        <span class="device-icon">💻</span>
+        <div>
+          <div id="device-name" class="device-name">Loading...</div>
+          <div class="device-status">Running HarborFlow</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h3>Quick Actions</h3>
+      <button class="btn btn-secondary" onclick="deployProject()">📁 Deploy Project</button>
+      <button class="btn btn-secondary" onclick="openDashboard()">🌐 Open Dashboard</button>
+    </div>
+    
+    <div class="card">
+      <h3>Stats</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+        <div style="text-align: center; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+          <div style="font-size: 24px; font-weight: bold;">0</div>
+          <div style="font-size: 11px; color: #94a3b8;">Projects</div>
+        </div>
+        <div style="text-align: center; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+          <div style="font-size: 24px; font-weight: bold;">0%</div>
+          <div style="font-size: 11px; color: #94a3b8;">CPU Used</div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="btn btn-secondary" onclick="logout()" style="margin-top: 8px;">Disconnect</button>
+  </div>
+  
+  <script>
+    const { ipcRenderer, shell } = require('electron');
+    
+    let config = {};
+    
+    async function init() {
+      config = await ipcRenderer.invoke('get-config');
+      if (config.apiKey) {
+        showDashboard();
+      }
+    }
+    
+    async function connect() {
+      const apiKey = document.getElementById('api-key').value.trim();
+      if (!apiKey) {
+        showMessage('login-message', 'Please enter your API key', 'error');
+        return;
+      }
+      
+      try {
+        const result = await ipcRenderer.invoke('register-chunk', apiKey);
+        
+        if (result.success) {
+          config.apiKey = apiKey;
+          await ipcRenderer.invoke('save-config', config);
+          showMessage('login-message', 'Connected successfully!', 'success');
+          setTimeout(showDashboard, 1000);
+        } else {
+          showMessage('login-message', result.error || 'Connection failed', 'error');
+        }
+      } catch (e) {
+        showMessage('login-message', e.message, 'error');
+      }
+    }
+    
+    function showDashboard() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('dashboard-screen').classList.remove('hidden');
+      document.getElementById('device-name').textContent = config.chunkName || 'Your Device';
+    }
+    
+    function showLogin() {
+      document.getElementById('dashboard-screen').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+    }
+    
+    async function logout() {
+      config.apiKey = null;
+      await ipcRenderer.invoke('save-config', config);
+      showLogin();
+    }
+    
+    async function deployProject() {
+      const folder = await ipcRenderer.invoke('select-folder');
+      if (folder) {
+        alert('Deploy feature coming soon!\\nSelected: ' + folder);
+      }
+    }
+    
+    function openDashboard() {
+      shell.openExternal(config.apiUrl || 'http://localhost:3000');
+    }
+    
+    function showMessage(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'message ' + type;
+      el.classList.remove('hidden');
+    }
+    
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+{
+    "name": "harborflow",
+    "displayName": "HarborFlow",
+    "description": "Deploy your projects to your own hardware with one click",
+    "version": "0.0.1",
+    "publisher": "harbor",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "harborflow.deploy",
+                "title": "Deploy to Harbor",
+                "icon": "$(rocket)"
+            },
+            {
+                "command": "harborflow.login",
+                "title": "HarborFlow: Set API Key"
+            },
+            {
+                "command": "harborflow.status",
+                "title": "HarborFlow: Show Status"
+            }
+        ],
+        "configuration": {
+            "title": "HarborFlow",
+            "properties": {
+                "harborflow.apiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Your Harbor API key"
+                },
+                "harborflow.apiUrl": {
+                    "type": "string",
+                    "default": "http://localhost:3000",
+                    "description": "Harbor Cloud API URL"
+                }
+            }
+        },
+        "menus": {
+            "explorer/context": [
+                {
+                    "command": "harborflow.deploy",
+                    "group": "navigation",
+                    "when": "explorerResourceIsFolder"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "package": "vsce package"
+    }
+}

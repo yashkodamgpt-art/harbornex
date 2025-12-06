@@ -1,0 +1,29 @@
+{
+  "name": "harbor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://yashkodamgpt-art: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@github.com/yashkodamgpt-art/Harbor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yashkodamgpt-art/Harbor/issues"
+  },
+  "homepage": "https://github.com/yashkodamgpt-art/Harbor#readme",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "chalk": "^4.1.2",
+    "cloudflared": "^0.7.1",
+    "commander": "^14.0.2",
+    "execa": "^9.6.1",
+    "ora": "^5.4.1"
+  }
+}

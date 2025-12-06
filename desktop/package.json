@@ -1,0 +1,24 @@
+{
+    "name": "harborflow-desktop",
+    "version": "1.0.0",
+    "description": "HarborFlow Desktop - Turn your computer into a cloud",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder"
+    },
+    "author": "Harbor",
+    "license": "MIT",
+    "devDependencies": {
+        "@electron/packager": "^19.0.1",
+        "electron": "^28.3.3",
+        "electron-builder": "^26.0.12"
+    },
+    "build": {
+        "appId": "dev.harbor.harborflow",
+        "productName": "HarborFlow",
+        "win": {
+            "target": "portable"
+        }
+    }
+}
