@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+    "name": "Harbor Pod",
+    "version": "0.1.0",
+    "description": "Self-host Harbor apps on your own device",
+    "permissions": [
+        "activeTab",
+        "storage"
+    ],
+    "host_permissions": [
+        "*://*.harbor.dev/*",
+        "*://*.trycloudflare.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Harbor Pod"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.harbor.dev/*",
+                "*://*.trycloudflare.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_start"
+        }
+    ]
+}
