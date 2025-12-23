@@ -1,0 +1,5 @@
+{
+  "name": "Hebbian Learning Simulator v3",
+  "description": "An interactive web app that simulates a simplified neural learning board inspired by Hebbian learning ('neurons that fire together wire together'). Press multiple neurons to create associations, then press one to recall the entire group.",
+  "requestFramePermissions": []
+}

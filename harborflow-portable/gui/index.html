@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .system-badge {
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #60a5fa;
+        }
+
+        .system-info {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .system-info h2 {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        .dirac-display {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .main-dirac {
+            font-size: 48px;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        .main-dirac span {
+            font-size: 24px;
+            color: #94a3b8;
+        }
+
+        .split-diracs {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .split-dirac {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            border-left: 3px solid;
+            min-width: 100px;
+        }
+
+        .split-dirac.dc {
+            border-color: #f97316;
+        }
+
+        .split-dirac.dm {
+            border-color: #22c55e;
+        }
+
+        .split-dirac.ds {
+            border-color: #3b82f6;
+        }
+
+        .split-dirac.db {
+            border-color: #a855f7;
+        }
+
+        .split-dirac .value {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .split-dirac .label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+        }
+
+        .btn-outline:hover {
+            border-color: #60a5fa;
+            color: #60a5fa;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .chunk-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .chunk-card.clickable {
+            cursor: pointer;
+        }
+
+        .chunk-card.clickable:hover {
+            border-color: #a855f7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+        }
+
+        .chunk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .chunk-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chunk-resources {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .chunk-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-idle {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+        }
+
+        .status-connected {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .status-online {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-inuse {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+
+        .chunk-app {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 8px 0;
+        }
+
+        .chunk-app-name {
+            color: #a855f7;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .chunk-app-url {
+            color: #60a5fa;
+            font-size: 12px;
+            word-break: break-all;
+        }
+
+        .chunk-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #334155;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-top: 8px;
+        }
+
+        .slider-breakdown {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">&#9875;</span>
+            <h1>NexFlow</h1>
+        </div>
+        <div class="system-badge" id="systemBadge">&#128421; Loading...</div>
+    </header>
+
+    <div class="container">
+        <div class="system-info">
+            <h2>Available System Resources</h2>
+            <div class="dirac-display">
+                <div class="main-dirac"><span id="systemDiracs">0</span><span>D</span></div>
+                <div class="split-diracs">
+                    <div class="split-dirac dc">
+                        <div class="value" id="systemDc">0</div>
+                        <div class="label">dc (compute)</div>
+                    </div>
+                    <div class="split-dirac dm">
+                        <div class="value" id="systemDm">0</div>
+                        <div class="label">dm (memory)</div>
+                    </div>
+                    <div class="split-dirac ds">
+                        <div class="value" id="systemDs">0</div>
+                        <div class="label">ds (storage)</div>
+                    </div>
+                    <div class="split-dirac db">
+                        <div class="value" id="systemDb">0</div>
+                        <div class="label">db (bandwidth)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">&#128421; My Chunks</div>
+                <button class="btn btn-primary" onclick="showCreateChunk()">+ Create Chunk</button>
+            </div>
+            <div id="chunksList"></div>
+            <div id="chunksEmpty" class="empty-state">
+                <div class="empty-state-icon">&#128230;</div>
+                <p>No chunks yet. Create one to share your resources!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="createChunkModal" class="modal-overlay hidden">
+        <div class="modal">
+            <h3>Create New Chunk</h3>
+            <div class="form-group">
+                <label>Chunk Name</label>
+                <input type="text" id="newChunkName" placeholder="My PC Chunk">
+            </div>
+            <div class="form-group">
+                <label>Resources to Share</label>
+                <input type="range" class="slider" id="newChunkDiracs" min="1" max="50" value="10"
+                    oninput="updateSliderPreview(this.value)">
+                <div class="slider-value"><span id="sliderValue">10</span>D</div>
+                <div class="slider-breakdown">
+                    <span>dc: <span id="previewDc">100</span></span>
+                    <span>dm: <span id="previewDm">160</span></span>
+                    <span>ds: <span id="previewDs">500</span></span>
+                    <span>db: <span id="previewDb">100</span></span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn btn-outline" onclick="hideCreateChunk()" style="flex:1;">Cancel</button>
+                <button class="btn btn-primary" onclick="createChunk()" style="flex:1;">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="connectChunkModal" class="modal-overlay hidden">
+        <div class="modal">
+            <h3>Connect to NexCloud</h3>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 16px;">Link this chunk to receive deployments.</p>
+            <div class="form-group">
+                <label>NexCloud URL</label>
+                <input type="text" id="connectUrl" value="https://app.harbornex.dev">
+            </div>
+            <div class="form-group">
+                <label>API Key</label>
+                <input type="text" id="connectApiKey" placeholder="Paste your API key">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn btn-outline" onclick="hideConnectChunk()" style="flex:1;">Cancel</button>
+                <button class="btn btn-success" onclick="connectChunk()" style="flex:1;">Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let localChunks = [];
+        let systemResources = { dc: 0, dm: 0, ds: 0, db: 0, total: 0 };
+        let connectingChunkId = null;
+
+        window.onload = function () {
+            detectSystemResources();
+            loadLocalChunks();
+            renderChunks();
+            startStatusPolling();
+        };
+
+        function detectSystemResources() {
+            const cores = navigator.hardwareConcurrency || 4;
+            const memory = navigator.deviceMemory || 8;
+            systemResources.dc = cores * 100;
+            systemResources.dm = memory * 16;
+            systemResources.ds = 1000;
+            systemResources.db = 200;
+            systemResources.total = Math.floor((systemResources.dc + systemResources.dm + systemResources.ds + systemResources.db) / 10);
+            document.getElementById('systemDiracs').textContent = systemResources.total;
+            document.getElementById('systemDc').textContent = systemResources.dc;
+            document.getElementById('systemDm').textContent = systemResources.dm;
+            document.getElementById('systemDs').textContent = systemResources.ds;
+            document.getElementById('systemDb').textContent = systemResources.db;
+            const platform = navigator.platform || 'Unknown';
+            let osName = platform.indexOf('Win') >= 0 ? 'Windows PC' : platform.indexOf('Mac') >= 0 ? 'MacBook' : 'Device';
+            document.getElementById('systemBadge').innerHTML = '&#128421; ' + osName;
+            document.getElementById('newChunkDiracs').max = Math.min(systemResources.total, 100);
+        }
+
+        function loadLocalChunks() {
+            const saved = localStorage.getItem('nexflow-chunks');
+            if (saved) localChunks = JSON.parse(saved);
+        }
+
+        function saveLocalChunks() {
+            localStorage.setItem('nexflow-chunks', JSON.stringify(localChunks));
+        }
+
+        function renderChunks() {
+            const list = document.getElementById('chunksList');
+            const empty = document.getElementById('chunksEmpty');
+            if (localChunks.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            list.innerHTML = localChunks.map(function (chunk) {
+                const statusClass = chunk.inUse ? 'status-inuse' : (chunk.connected ? (chunk.online ? 'status-online' : 'status-connected') : 'status-idle');
+                const statusIcon = chunk.inUse ? '&#128995;' : (chunk.connected ? (chunk.online ? '&#128994;' : '&#128309;') : '&#9898;');
+                const statusLabel = chunk.inUse ? 'In Use' : (chunk.connected ? (chunk.online ? 'Online' : 'Connected') : 'Idle');
+
+                let appHtml = '';
+                if (chunk.deployment) {
+                    appHtml = '<div class="chunk-app"><div class="chunk-app-name">&#128230; ' + chunk.deployment.name + '</div><div class="chunk-app-url">' + (chunk.deployment.url || 'Starting...') + '</div></div>';
+                }
+
+                let actionsHtml = '';
+                if (chunk.connected) {
+                    if (chunk.deployment && chunk.deployment.url) {
+                        actionsHtml += '<a href="' + chunk.deployment.url + '" target="_blank" class="btn btn-primary btn-sm">&#127760; Open App</a>';
+                    }
+                    actionsHtml += '<button class="btn btn-outline btn-sm" onclick="disconnectChunk(\'' + chunk.id + '\')">Disconnect</button>';
+                } else {
+                    actionsHtml += '<button class="btn btn-success btn-sm" onclick="showConnectChunk(\'' + chunk.id + '\')">&#128279; Connect</button>';
+                }
+                actionsHtml += '<button class="btn btn-danger btn-sm" onclick="deleteChunk(\'' + chunk.id + '\')">&#128465;</button>';
+
+                var clickableClass = (chunk.deployment && chunk.deployment.url) ? 'clickable' : '';
+                var dblClickHandler = (chunk.deployment && chunk.deployment.url) ? 'ondblclick="openChunkApp(\'' + chunk.id + '\')"' : '';
+                var titleAttr = chunk.deployment ? 'title="Double-click to open app"' : '';
+
+                return '<div class="chunk-card ' + clickableClass + '" ' + dblClickHandler + ' ' + titleAttr + '><div class="chunk-header"><div class="chunk-name">&#128421; ' + chunk.name + '</div><span class="chunk-status ' + statusClass + '">' + statusIcon + ' ' + statusLabel + '</span></div><div class="chunk-resources">' + chunk.diracs + 'D (dc:' + chunk.dc + ' dm:' + chunk.dm + ' ds:' + chunk.ds + ' db:' + chunk.db + ')</div>' + appHtml + '<div class="chunk-actions">' + actionsHtml + '</div></div>';
+            }).join('');
+        }
+
+        function showCreateChunk() {
+            document.getElementById('newChunkName').value = navigator.platform.indexOf('Win') >= 0 ? 'Windows PC' : 'My Device';
+            document.getElementById('createChunkModal').classList.remove('hidden');
+        }
+
+        function hideCreateChunk() { document.getElementById('createChunkModal').classList.add('hidden'); }
+
+        function updateSliderPreview(value) {
+            const d = parseInt(value);
+            document.getElementById('sliderValue').textContent = d;
+            document.getElementById('previewDc').textContent = d * 10;
+            document.getElementById('previewDm').textContent = d * 16;
+            document.getElementById('previewDs').textContent = d * 50;
+            document.getElementById('previewDb').textContent = d * 10;
+        }
+
+        function createChunk() {
+            const name = document.getElementById('newChunkName').value || 'My Device';
+            const diracs = parseInt(document.getElementById('newChunkDiracs').value);
+            localChunks.push({
+                id: 'local-' + Date.now(),
+                name: name,
+                diracs: diracs,
+                dc: diracs * 10,
+                dm: diracs * 16,
+                ds: diracs * 50,
+                db: diracs * 10,
+                connected: false,
+                online: false,
+                inUse: false,
+                connection: null,
+                cloudId: null,
+                deployment: null
+            });
+            saveLocalChunks();
+            renderChunks();
+            hideCreateChunk();
+        }
+
+        function deleteChunk(chunkId) {
+            const chunk = localChunks.find(function (c) { return c.id === chunkId; });
+            if (!chunk || !confirm('Delete "' + chunk.name + '"?')) return;
+            if (chunk.connected && chunk.cloudId && chunk.connection) {
+                fetch(chunk.connection.apiUrl + '/api/chunks?id=' + chunk.cloudId, {
+                    method: 'DELETE',
+                    headers: { 'x-api-key': chunk.connection.apiKey }
+                }).catch(function (e) { console.log('Cloud delete failed:', e); });
+            }
+            localChunks = localChunks.filter(function (c) { return c.id !== chunkId; });
+            saveLocalChunks();
+            renderChunks();
+        }
+
+        function showConnectChunk(chunkId) {
+            connectingChunkId = chunkId;
+            document.getElementById('connectChunkModal').classList.remove('hidden');
+        }
+
+        function hideConnectChunk() {
+            connectingChunkId = null;
+            document.getElementById('connectChunkModal').classList.add('hidden');
+        }
+
+        async function connectChunk() {
+            if (!connectingChunkId) return;
+            const chunk = localChunks.find(function (c) { return c.id === connectingChunkId; });
+            if (!chunk) return;
+            const apiUrl = document.getElementById('connectUrl').value;
+            const apiKey = document.getElementById('connectApiKey').value;
+            if (!apiKey) { alert('Please enter your API key'); return; }
+            try {
+                const res = await fetch(apiUrl + '/api/chunks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+                    body: JSON.stringify({ name: chunk.name, diracs: chunk.diracs, dc: chunk.dc, dm: chunk.dm, ds: chunk.ds, db: chunk.db, type: 'chunk' })
+                });
+                if (!res.ok) throw new Error('Failed to connect');
+                const data = await res.json();
+                chunk.connected = true;
+                chunk.online = true;
+                chunk.cloudId = data.chunk.id;
+                chunk.connection = { apiUrl: apiUrl, apiKey: apiKey };
+                saveLocalChunks();
+                renderChunks();
+                hideConnectChunk();
+                alert('Chunk connected! You can now deploy apps from NexCloud.');
+            } catch (e) {
+                alert('Connection failed: ' + e.message);
+            }
+        }
+
+        function disconnectChunk(chunkId) {
+            const chunk = localChunks.find(function (c) { return c.id === chunkId; });
+            if (!chunk || !confirm('Disconnect "' + chunk.name + '"?')) return;
+            if (chunk.cloudId && chunk.connection) {
+                fetch(chunk.connection.apiUrl + '/api/chunks?id=' + chunk.cloudId, {
+                    method: 'DELETE',
+                    headers: { 'x-api-key': chunk.connection.apiKey }
+                }).catch(function (e) { console.log('Cloud delete failed:', e); });
+            }
+            chunk.connected = false;
+            chunk.online = false;
+            chunk.cloudId = null;
+            chunk.connection = null;
+            chunk.deployment = null;
+            chunk.inUse = false;
+            saveLocalChunks();
+            renderChunks();
+        }
+
+        function startStatusPolling() {
+            checkAllChunks();
+            setInterval(checkAllChunks, 10000);
+        }
+
+        async function checkAllChunks() {
+            let updated = false;
+            for (let i = 0; i < localChunks.length; i++) {
+                const chunk = localChunks[i];
+                if (chunk.connected && chunk.cloudId && chunk.connection) {
+                    try {
+                        const res = await fetch(chunk.connection.apiUrl + '/api/chunks', {
+                            headers: { 'x-api-key': chunk.connection.apiKey }
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            const cloudChunk = data.chunks ? data.chunks.find(function (c) { return c.id === chunk.cloudId; }) : null;
+                            if (cloudChunk) {
+                                chunk.online = cloudChunk.status === 'online';
+                                chunk.inUse = cloudChunk.inUse || false;
+                                chunk.deployment = cloudChunk.deployment || null;
+                                updated = true;
+                            }
+                        }
+                    } catch (e) {
+                        chunk.online = false;
+                    }
+                }
+            }
+            if (updated) {
+                saveLocalChunks();
+                renderChunks();
+            }
+        }
+
+        function openChunkApp(chunkId) {
+            const chunk = localChunks.find(function (c) { return c.id === chunkId; });
+            if (chunk && chunk.deployment && chunk.deployment.url) {
+                window.open(chunk.deployment.url, '_blank');
+            }
+        }
+    </script>
+</body>
+
+</html>

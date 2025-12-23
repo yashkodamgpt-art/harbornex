@@ -178,75 +178,155 @@ export default async function DashboardPage() {
                         )}
                     </div>
 
-                    {/* Chunks Section */}
+                    {/* Chunks & Pods Section */}
                     <div>
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-white">My Devices</h2>
-                            <button className="px-4 py-2 border border-slate-600 hover:border-slate-500 text-slate-300 rounded-lg text-sm font-medium transition">
-                                + Add Device
-                            </button>
+                            <a
+                                href="/harborflow"
+                                className="px-4 py-2 border border-slate-600 hover:border-slate-500 text-slate-300 rounded-lg text-sm font-medium transition"
+                            >
+                                + Open HarborFlow
+                            </a>
                         </div>
 
-                        {chunks.length === 0 ? (
-                            <div className="bg-slate-800/50 border border-slate-700 border-dashed rounded-2xl p-12 text-center">
-                                <div className="text-4xl mb-4">💻</div>
-                                <h3 className="text-lg font-semibold text-white mb-2">
-                                    No devices connected
-                                </h3>
-                                <p className="text-slate-400 mb-6">
-                                    Install HarborFlow on your laptop or PC to get started.
-                                </p>
-                                <button className="inline-block px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition">
-                                    Download HarborFlow
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {chunks.map((chunk) => (
-                                    <div
-                                        key={chunk.id}
-                                        className="bg-slate-800/50 border border-slate-700 rounded-xl p-6"
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-2xl">💻</span>
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-white">
-                                                        {chunk.name}
-                                                    </h3>
-                                                    <p className="text-slate-500 text-sm">
-                                                        Last seen:{" "}
-                                                        {chunk.lastSeen
-                                                            ? new Date(chunk.lastSeen).toLocaleString()
-                                                            : "Never"}
-                                                    </p>
+                        {/* Chunks */}
+                        <div className="mb-6">
+                            <h3 className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-2">
+                                🖥️ Chunks <span className="text-slate-500">(Your devices sharing resources)</span>
+                            </h3>
+                            {chunks.filter((c: any) => c.type !== 'pod').length === 0 ? (
+                                <div className="bg-slate-800/50 border border-slate-700 border-dashed rounded-xl p-8 text-center">
+                                    <div className="text-3xl mb-3">🖥️</div>
+                                    <p className="text-slate-400 text-sm">
+                                        No chunks yet. Open HarborFlow to share resources.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {chunks.filter((c: any) => c.type !== 'pod').map((chunk: any) => (
+                                        <div
+                                            key={chunk.id}
+                                            className="bg-slate-800/50 border border-slate-700 rounded-xl p-5"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-2xl">🖥️</span>
+                                                    <div>
+                                                        <h4 className="font-semibold text-white">{chunk.name}</h4>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <span className="text-2xl font-bold text-blue-400">
+                                                                {chunk.diracs || 5}D
+                                                            </span>
+                                                            <span className="text-xs text-slate-500">
+                                                                (dc:{chunk.dc || 50} dm:{chunk.dm || 80} ds:{chunk.ds || 250} db:{chunk.db || 50})
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs font-medium ${chunk.status === "online"
-                                                    ? "bg-green-600/20 text-green-400"
-                                                    : "bg-red-600/20 text-red-400"
-                                                    }`}
-                                            >
-                                                {chunk.status === "online" ? "🟢 Online" : "🔴 Offline"}
-                                            </span>
-                                        </div>
-
-                                        <div className="mt-4 space-y-2">
-                                            <div className="flex items-center justify-between text-sm">
-                                                <span className="text-slate-400">Storage</span>
-                                                <span className="text-slate-300">
-                                                    0 / {chunk.storage} GB
+                                                <span
+                                                    className={`px-3 py-1 rounded-full text-xs font-medium ${chunk.status === "online"
+                                                        ? "bg-green-600/20 text-green-400"
+                                                        : "bg-red-600/20 text-red-400"
+                                                        }`}
+                                                >
+                                                    {chunk.status === "online" ? "🟢 Online" : "🔴 Offline"}
                                                 </span>
                                             </div>
-                                            <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                                                <div className="h-full bg-blue-500 rounded-full w-0"></div>
+                                            {/* Usage Bars */}
+                                            <div className="mt-3 grid grid-cols-4 gap-2">
+                                                <div className="text-center">
+                                                    <div className="h-12 bg-slate-700 rounded relative overflow-hidden">
+                                                        <div
+                                                            className="absolute bottom-0 w-full bg-orange-500 transition-all"
+                                                            style={{ height: `${chunk.usageDc || 0}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs text-slate-500">dc {chunk.usageDc || 0}%</span>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="h-12 bg-slate-700 rounded relative overflow-hidden">
+                                                        <div
+                                                            className="absolute bottom-0 w-full bg-green-500 transition-all"
+                                                            style={{ height: `${chunk.usageDm || 0}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs text-slate-500">dm {chunk.usageDm || 0}%</span>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="h-12 bg-slate-700 rounded relative overflow-hidden">
+                                                        <div
+                                                            className="absolute bottom-0 w-full bg-blue-500 transition-all"
+                                                            style={{ height: `${chunk.usageDs || 0}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs text-slate-500">ds {chunk.usageDs || 0}%</span>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="h-12 bg-slate-700 rounded relative overflow-hidden">
+                                                        <div
+                                                            className="absolute bottom-0 w-full bg-purple-500 transition-all"
+                                                            style={{ height: `${chunk.usageDb || 0}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs text-slate-500">db {chunk.usageDb || 0}%</span>
+                                                </div>
+                                            </div>
+                                            {/* Show which project is using this chunk */}
+                                            {projects.find((p: any) => p.chunkId === chunk.id) && (
+                                                <p className="text-blue-400 text-xs mt-2">
+                                                    📦 Used by: {projects.find((p: any) => p.chunkId === chunk.id)?.name}
+                                                </p>
+                                            )}
+                                            {chunk.lastSeen && (
+                                                <p className="text-slate-500 text-xs mt-1">
+                                                    Last seen: {new Date(chunk.lastSeen).toLocaleString()}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Pods */}
+                        <div>
+                            <h3 className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-2">
+                                🌐 Pods <span className="text-slate-500">(Using others' resources)</span>
+                            </h3>
+                            {chunks.filter((c: any) => c.type === 'pod').length === 0 ? (
+                                <div className="bg-slate-800/30 border border-slate-700/50 border-dashed rounded-xl p-6 text-center">
+                                    <div className="text-2xl mb-2">🌐</div>
+                                    <p className="text-slate-500 text-sm">
+                                        No pods yet. Connect to chunks shared by others.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {chunks.filter((c: any) => c.type === 'pod').map((pod: any) => (
+                                        <div
+                                            key={pod.id}
+                                            className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-xl">🌐</span>
+                                                    <div>
+                                                        <h4 className="font-medium text-white">{pod.name}</h4>
+                                                        <span className="text-blue-400 text-sm">
+                                                            {pod.diracs || 5}D
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span className="text-xs text-slate-500">
+                                                    {pod.status === "online" ? "🟢 Active" : "⚫ Inactive"}
+                                                </span>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </main>

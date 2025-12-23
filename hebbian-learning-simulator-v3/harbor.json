@@ -1,0 +1,9 @@
+{
+    "name": "Hebbian Learning Simulator",
+    "framework": "vite",
+    "buildCommand": "npm run build",
+    "startCommand": "npm run preview",
+    "outputDir": "dist",
+    "port": 4173,
+    "installCommand": "npm install"
+}

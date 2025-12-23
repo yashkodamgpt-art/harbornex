@@ -1,14 +1,14 @@
 {
     "manifest_version": 3,
-    "name": "Harbor Pod",
-    "version": "0.1.0",
-    "description": "Self-host Harbor apps on your own device",
+    "name": "NexFlow Pod",
+    "version": "1.0.0",
+    "description": "Run HarborNex apps on your own device",
     "permissions": [
         "activeTab",
         "storage"
     ],
     "host_permissions": [
-        "*://*.harbor.dev/*",
+        "*://*.harbornex.dev/*",
         "*://*.trycloudflare.com/*"
     ],
     "background": {
@@ -16,12 +16,12 @@
     },
     "action": {
         "default_popup": "popup.html",
-        "default_title": "Harbor Pod"
+        "default_title": "NexFlow Pod"
     },
     "content_scripts": [
         {
             "matches": [
-                "*://*.harbor.dev/*",
+                "*://*.harbornex.dev/*",
                 "*://*.trycloudflare.com/*"
             ],
             "js": [

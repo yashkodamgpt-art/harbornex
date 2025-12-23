@@ -65,3 +65,33 @@ export async function GET(
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+
+// DELETE /api/projects/[id] - Delete project and all related data
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+
+        // First, delete all deployments
+        await prisma.deployment.deleteMany({
+            where: { projectId: id },
+        });
+
+        // Delete all env variables
+        await prisma.envVariable.deleteMany({
+            where: { projectId: id },
+        });
+
+        // Delete the project
+        await prisma.project.delete({
+            where: { id },
+        });
+
+        return NextResponse.json({ success: true, message: "Project deleted" });
+    } catch (error: any) {
+        console.error("Delete project error:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

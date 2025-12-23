@@ -1,12 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// HarborNex Database Schema
+// Using Supabase PostgreSQL
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -65,9 +65,28 @@ model Chunk {
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   status    String    @default("offline")
+  type      String    @default("chunk") // "chunk" or "pod"
+  
+  // Dirac resources (human-readable total)
+  diracs    Int       @default(5)
+  
+  // Split diracs (machine-readable components)
+  dc        Int       @default(50)   // Compute diracs (10dc = 0.1 CPU cores)
+  dm        Int       @default(80)   // Memory diracs (16dm = 256MB RAM)
+  ds        Int       @default(250)  // Storage diracs (50ds = 5GB disk)
+  db        Int       @default(50)   // Bandwidth diracs (10db = 5Mbps)
+  
+  // Usage tracking (for live graphs)
+  usageDc   Int       @default(0)    // Current compute usage
+  usageDm   Int       @default(0)    // Current memory usage
+  usageDs   Int       @default(0)    // Current storage usage
+  usageDb   Int       @default(0)    // Current bandwidth usage
+  
+  // Legacy fields (for compatibility)
   storage   Int       @default(0)
   ram       Int       @default(0)
   cpu       Int       @default(0)
+  
   lastSeen  DateTime?
   projects  Project[]
   createdAt DateTime  @default(now())

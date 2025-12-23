@@ -1,9 +1,9 @@
 {
-    "name": "harborflow",
-    "displayName": "HarborFlow",
-    "description": "Deploy your projects to your own hardware with one click",
-    "version": "0.0.1",
-    "publisher": "harbor",
+    "name": "nexflow",
+    "displayName": "NexFlow",
+    "description": "Deploy your projects to HarborNex with one click",
+    "version": "1.0.0",
+    "publisher": "harbornex",
     "engines": {
         "vscode": "^1.85.0"
     },
@@ -17,38 +17,38 @@
     "contributes": {
         "commands": [
             {
-                "command": "harborflow.deploy",
-                "title": "Deploy to Harbor",
+                "command": "nexflow.deploy",
+                "title": "Deploy to HarborNex",
                 "icon": "$(rocket)"
             },
             {
-                "command": "harborflow.login",
-                "title": "HarborFlow: Set API Key"
+                "command": "nexflow.login",
+                "title": "NexFlow: Set API Key"
             },
             {
-                "command": "harborflow.status",
-                "title": "HarborFlow: Show Status"
+                "command": "nexflow.status",
+                "title": "NexFlow: Show Status"
             }
         ],
         "configuration": {
-            "title": "HarborFlow",
+            "title": "NexFlow",
             "properties": {
-                "harborflow.apiKey": {
+                "nexflow.apiKey": {
                     "type": "string",
                     "default": "",
-                    "description": "Your Harbor API key"
+                    "description": "Your HarborNex API key"
                 },
-                "harborflow.apiUrl": {
+                "nexflow.apiUrl": {
                     "type": "string",
-                    "default": "http://localhost:3000",
-                    "description": "Harbor Cloud API URL"
+                    "default": "https://app.harbornex.dev",
+                    "description": "NexCloud API URL"
                 }
             }
         },
         "menus": {
             "explorer/context": [
                 {
-                    "command": "harborflow.deploy",
+                    "command": "nexflow.deploy",
                     "group": "navigation",
                     "when": "explorerResourceIsFolder"
                 }

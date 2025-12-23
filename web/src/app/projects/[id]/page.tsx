@@ -138,6 +138,8 @@ export default function ProjectDetailPage() {
 function FrontendTab({ project }: { project: Project }) {
     const [deployments, setDeployments] = useState<any[]>([]);
     const [envVars, setEnvVars] = useState<any[]>([]);
+    const [chunks, setChunks] = useState<any[]>([]);
+    const [selectedChunkId, setSelectedChunkId] = useState<string>("");
     const [deploying, setDeploying] = useState(false);
     const [showEnvForm, setShowEnvForm] = useState(false);
     const [newEnvKey, setNewEnvKey] = useState("");
@@ -147,6 +149,7 @@ function FrontendTab({ project }: { project: Project }) {
     useEffect(() => {
         fetchDeployments();
         fetchEnvVars();
+        fetchChunks();
     }, [project.id]);
 
     async function fetchDeployments() {
@@ -161,10 +164,40 @@ function FrontendTab({ project }: { project: Project }) {
         setEnvVars(data.envVariables || []);
     }
 
+    async function fetchChunks() {
+        const res = await fetch(`/api/chunks/list`);
+        if (res.ok) {
+            const data = await res.json();
+            setChunks(data.chunks || []);
+            // Auto-select first chunk if available
+            if (data.chunks?.length > 0 && !selectedChunkId) {
+                setSelectedChunkId(data.chunks[0].id);
+            }
+        }
+    }
+
+    async function deleteDeployment(depId: string) {
+        if (!confirm("Delete this deployment?")) return;
+        await fetch(`/api/projects/${project.id}/deployments?depId=${depId}`, {
+            method: "DELETE",
+        });
+        setDeployments(deployments.filter((d) => d.id !== depId));
+    }
+
     async function triggerDeploy() {
+        if (!selectedChunkId && chunks.length > 0) {
+            alert("Please select a chunk to deploy to");
+            return;
+        }
+        if (chunks.length === 0) {
+            alert("No chunks available! Create a chunk in HarborFlow first.");
+            return;
+        }
         setDeploying(true);
         const res = await fetch(`/api/projects/${project.id}/deployments`, {
             method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chunkId: selectedChunkId }),
         });
         const data = await res.json();
         if (data.deployment) {
@@ -199,19 +232,52 @@ function FrontendTab({ project }: { project: Project }) {
         setEnvVars(envVars.filter((v) => v.id !== envId));
     }
 
+    async function deleteProject() {
+        try {
+            const res = await fetch(`/api/projects/${project.id}`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                window.location.href = "/dashboard";
+            } else {
+                alert("Failed to delete project");
+            }
+        } catch (e) {
+            alert("Error deleting project");
+        }
+    }
+
     return (
         <div className="space-y-6">
             {/* Deployments */}
             <section>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-white">Deployments</h2>
-                    <button
-                        onClick={triggerDeploy}
-                        disabled={deploying}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white rounded-lg text-sm transition"
-                    >
-                        {deploying ? "Deploying..." : "Deploy Now"}
-                    </button>
+                    <div className="flex items-center gap-3">
+                        {/* Chunk Selector */}
+                        <select
+                            value={selectedChunkId}
+                            onChange={(e) => setSelectedChunkId(e.target.value)}
+                            className="px-3 py-2 bg-slate-800 border border-slate-700 text-white rounded-lg text-sm"
+                        >
+                            {chunks.length === 0 ? (
+                                <option value="">No chunks available</option>
+                            ) : (
+                                chunks.map((chunk) => (
+                                    <option key={chunk.id} value={chunk.id}>
+                                        {chunk.name} ({chunk.diracs}D)
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                        <button
+                            onClick={triggerDeploy}
+                            disabled={deploying || chunks.length === 0}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white rounded-lg text-sm transition"
+                        >
+                            {deploying ? "Deploying..." : "Deploy Now"}
+                        </button>
+                    </div>
                 </div>
                 <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
                     {deployments.length > 0 ? (
@@ -226,12 +292,12 @@ function FrontendTab({ project }: { project: Project }) {
                                         <div className="flex items-center gap-4">
                                             <span
                                                 className={`w-2 h-2 rounded-full ${dep.status === "success"
-                                                        ? "bg-green-500"
-                                                        : dep.status === "building"
-                                                            ? "bg-yellow-500 animate-pulse"
-                                                            : dep.status === "pending"
-                                                                ? "bg-slate-500"
-                                                                : "bg-red-500"
+                                                    ? "bg-green-500"
+                                                    : dep.status === "building"
+                                                        ? "bg-yellow-500 animate-pulse"
+                                                        : dep.status === "pending"
+                                                            ? "bg-slate-500"
+                                                            : "bg-red-500"
                                                     }`}
                                             />
                                             <div>
@@ -251,14 +317,20 @@ function FrontendTab({ project }: { project: Project }) {
                                         </div>
                                         <span
                                             className={`px-2 py-1 rounded text-xs font-medium ${dep.status === "success"
-                                                    ? "bg-green-600/20 text-green-400"
-                                                    : dep.status === "building"
-                                                        ? "bg-yellow-600/20 text-yellow-400"
-                                                        : "bg-slate-600/20 text-slate-400"
+                                                ? "bg-green-600/20 text-green-400"
+                                                : dep.status === "building"
+                                                    ? "bg-yellow-600/20 text-yellow-400"
+                                                    : "bg-slate-600/20 text-slate-400"
                                                 }`}
                                         >
                                             {dep.status}
                                         </span>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); deleteDeployment(dep.id); }}
+                                            className="px-2 py-1 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded text-xs"
+                                        >
+                                            🗑️
+                                        </button>
                                     </div>
                                     {/* Build Logs */}
                                     {selectedDeployment?.id === dep.id && dep.buildLogs && (
@@ -358,6 +430,32 @@ function FrontendTab({ project }: { project: Project }) {
                                 : "No environment variables configured"}
                         </div>
                     )}
+                </div>
+            </section>
+
+            {/* Danger Zone */}
+            <section className="mt-8">
+                <h2 className="text-lg font-semibold text-red-400 mb-4">⚠️ Danger Zone</h2>
+                <div className="bg-red-950/20 border border-red-900/50 rounded-xl p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-white font-medium">Delete Project</h3>
+                            <p className="text-slate-400 text-sm">Once you delete a project, there is no going back. Please be certain.</p>
+                        </div>
+                        <button
+                            onClick={() => {
+                                const confirmName = prompt(`To delete this project, type the project name: "${project.name}"`);
+                                if (confirmName === project.name) {
+                                    deleteProject();
+                                } else if (confirmName !== null) {
+                                    alert("Project name doesn't match. Deletion cancelled.");
+                                }
+                            }}
+                            className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm transition"
+                        >
+                            Delete Project
+                        </button>
+                    </div>
                 </div>
             </section>
         </div>

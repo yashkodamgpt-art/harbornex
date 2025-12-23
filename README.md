@@ -1,102 +1,68 @@
-# Harbor
+# HarborNex
 
-**Turn your computer into a cloud.** Deploy apps on your own hardware with public URLs.
+**Turn any computer into your cloud.** 🌐
 
-## 🚀 Quick Start
+HarborNex is a decentralized cloud platform that lets you share computing resources from any device and deploy applications anywhere.
 
+## 🚀 Products
+
+| Product | Description |
+|---------|-------------|
+| **NexCloud** | Web dashboard at [app.harbornex.dev](https://app.harbornex.dev) |
+| **NexFlow** | Desktop GUI for sharing resources |
+| **NexFlow CLI** | Command-line interface |
+
+## ⚡ Quick Start
+
+### Using NexFlow (Desktop)
+1. Download [NexFlow](https://harbornex.dev/download)
+2. Run `start-harborflow.bat`
+3. Login with your API key from NexCloud
+4. Create a chunk to share resources!
+
+### Using NexFlow CLI
 ```bash
-# 1. Start Harbor Cloud (dashboard)
-cd web && .\start-server.bat
+# Connect to NexCloud
+nexflow connect https://app.harbornex.dev
 
-# 2. Login with your API key
-node bin/harbor.js login YOUR_API_KEY
+# Login with API key
+nexflow login <your-api-key>
 
-# 3. Register this device
-node bin/harbor.js register
+# Register device as chunk
+nexflow register
 
-# 4. Deploy from GitHub
-node bin/harbor.js deploy-git https://github.com/user/repo
+# Deploy a project
+nexflow deploy
 ```
 
-## 📁 Project Structure
+## 📊 The Dirac System
+
+Resources are measured in **Diracs** - a universal compute unit:
+
+| Unit | Meaning | Conversion |
+|------|---------|------------|
+| **dc** | Compute Diracs | 10dc ≈ 1 CPU core |
+| **dm** | Memory Diracs | 16dm ≈ 256MB RAM |
+| **ds** | Storage Diracs | 50ds ≈ 5GB disk |
+| **db** | Bandwidth Diracs | 10db ≈ 5Mbps |
+
+## 🏗️ Project Structure
 
 ```
-Harbor/
-├── bin/                    # CLI executable
-│   └── harbor.js           # Main CLI entry point
-├── src/                    # CLI modules
-│   ├── api.js              # Harbor Cloud API client
-│   ├── config.js           # CLI configuration
-│   ├── daemon.js           # Background service
-│   ├── detect.js           # Project type detection
-│   ├── runner.js           # Build & run projects
-│   └── tunnel.js           # Cloudflare tunnel
-├── web/                    # Harbor Cloud (Next.js)
-│   ├── src/app/            # Pages & API routes
-│   ├── prisma/             # Database schema
-│   └── .env                # Environment config
-├── desktop/                # Electron app (paused)
-└── vscode-extension/       # VS Code extension
+harbornex/
+├── web/          # NexCloud dashboard (Next.js)
+├── gui/          # NexFlow desktop GUI
+├── src/          # CLI core modules
+├── bin/          # CLI entry point
+└── docs/         # Documentation
 ```
 
-## 🔧 Components
+## 🔗 Links
 
-| Component | Status | Description |
-|-----------|--------|-------------|
-| **Harbor Cloud** | ✅ | Web dashboard at localhost:3000 |
-| **HarborFlow CLI** | ✅ | Deploy, tunnel, register commands |
-| **GitHub Integration** | ✅ | Deploy from GitHub repos |
-| **VS Code Extension** | ✅ | One-click deploy |
-| **Desktop App** | ⏸️ | Needs admin to build .exe |
-| **P2P Pods** | 🔜 | Coming next |
+- **Website:** [harbornex.dev](https://harbornex.dev)
+- **Dashboard:** [app.harbornex.dev](https://app.harbornex.dev)
+- **Docs:** [docs.harbornex.dev](https://docs.harbornex.dev)
 
-## 💻 CLI Commands
+## 📄 License
 
-```bash
-harbor login <api-key>        # Save API key
-harbor register               # Connect this device
-harbor deploy                 # Deploy local project
-harbor deploy-git <repo>      # Deploy from GitHub
-harbor tunnel <port>          # Create public URL
-harbor status                 # Show status
-harbor config                 # Show config
-harbor start                  # Start daemon
-```
-
-## 🔑 Environment Variables
-
-Create `web/.env`:
-```
-DATABASE_URL=file:./dev.db
-NEXTAUTH_SECRET=your-secret
-NEXTAUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=xxx
-GOOGLE_CLIENT_SECRET=xxx
-GITHUB_CLIENT_ID=xxx
-GITHUB_CLIENT_SECRET=xxx
-```
-
-## 📊 Database Schema
-
-Key models in `web/prisma/schema.prisma`:
-- **User** - Account with Google/GitHub OAuth
-- **Chunk** - Connected device (your computer)
-- **Project** - Deployed app linked to GitHub repo
-- **Deployment** - Deploy history
-
-## 🛠️ Development
-
-```bash
-# Install dependencies
-cd web && npm install
-
-# Run database migrations
-npx prisma db push
-
-# Start dev server
-npm run dev
-```
-
----
-
-*Built with Next.js, Prisma, NextAuth, and Cloudflare Tunnels*
+MIT License - HarborNex Team

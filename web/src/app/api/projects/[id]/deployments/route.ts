@@ -50,6 +50,15 @@ export async function POST(
 
     const { id } = await params;
 
+    // Get chunkId from request body
+    let chunkId: string | null = null;
+    try {
+        const body = await request.json();
+        chunkId = body.chunkId || null;
+    } catch {
+        // No body provided
+    }
+
     try {
         const project = await prisma.project.findFirst({
             where: {
@@ -60,6 +69,30 @@ export async function POST(
 
         if (!project) {
             return NextResponse.json({ error: "Project not found" }, { status: 404 });
+        }
+
+        // If chunkId provided, check if chunk is already used by another project
+        if (chunkId) {
+            const chunkInUse = await prisma.project.findFirst({
+                where: {
+                    chunkId: chunkId,
+                    id: { not: id }, // Not this project
+                    status: "running", // Only check running projects
+                },
+            });
+
+            if (chunkInUse) {
+                return NextResponse.json(
+                    { error: `Chunk is already in use by project "${chunkInUse.name}". One chunk can only be used by one project at a time.` },
+                    { status: 400 }
+                );
+            }
+
+            // Assign chunk to project
+            await prisma.project.update({
+                where: { id },
+                data: { chunkId },
+            });
         }
 
         const lastDeployment = await prisma.deployment.findFirst({
@@ -113,5 +146,47 @@ export async function POST(
         return NextResponse.json({ deployment });
     } catch (error) {
         return NextResponse.json({ error: "Failed to create deployment" }, { status: 500 });
+    }
+}
+
+// DELETE /api/projects/[id]/deployments?depId=xxx - Delete a deployment
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const session = await auth();
+    if (!session?.user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const depId = request.nextUrl.searchParams.get("depId");
+
+    if (!depId) {
+        return NextResponse.json({ error: "Deployment ID required" }, { status: 400 });
+    }
+
+    try {
+        // Verify project belongs to user
+        const project = await prisma.project.findFirst({
+            where: {
+                id,
+                user: { email: session.user.email },
+            },
+        });
+
+        if (!project) {
+            return NextResponse.json({ error: "Project not found" }, { status: 404 });
+        }
+
+        // Delete the deployment
+        await prisma.deployment.delete({
+            where: { id: depId },
+        });
+
+        return NextResponse.json({ success: true, message: "Deployment deleted" });
+    } catch (error) {
+        console.error("Delete deployment error:", error);
+        return NextResponse.json({ error: "Failed to delete deployment" }, { status: 500 });
     }
 }

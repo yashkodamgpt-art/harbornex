@@ -1,6 +1,7 @@
 {
-  "name": "web",
+  "name": "harbornex-cloud",
   "version": "0.1.0",
+  "description": "NexCloud - HarborNex Dashboard",
   "private": true,
   "scripts": {
     "dev": "next dev",

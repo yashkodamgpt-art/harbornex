@@ -1,6 +1,44 @@
+# Node
+node_modules/
 node/
+
+# Git internals (nested)
 git/
+
+# Archives
 *.zip
 *.exe
 *.7z
+
+# Environment files (sensitive)
+.env
+.env.*
+*.env
+
+# Sensitive scripts
 setup_env.ps1
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Portable folder internals (keep structure, ignore heavy folders)
+harborflow-portable/node_modules/
+harborflow-portable/node/
+harborflow-portable/data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Cloudflare
+cloudflared.exe
