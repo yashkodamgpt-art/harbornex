@@ -11,23 +11,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            allowDangerousEmailAccountLinking: true,
         }),
         GitHub({
             clientId: process.env.GITHUB_CLIENT_ID!,
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+            allowDangerousEmailAccountLinking: true,
             authorization: {
                 params: {
                     scope: "read:user user:email repo",
                 },
             },
-            checks: ["none"], // Disable PKCE to avoid cookie issues
         }),
     ],
     callbacks: {
         async session({ session, user }) {
             if (session.user) {
                 session.user.id = user.id;
-                // Get API key and GitHub token
+                // Get API key
                 const dbUser = await prisma.user.findUnique({
                     where: { id: user.id },
                     select: { apiKey: true },

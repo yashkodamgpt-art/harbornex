@@ -114,6 +114,7 @@ async function pollFallback() {
                     await handleDeployment({
                         projectId: chunk.deployment.projectId,
                         projectName: chunk.deployment.name,
+                        subdomain: chunk.deployment.subdomain,
                         repoUrl: chunk.deployment.repoUrl,
                         branch: chunk.deployment.branch || 'main',
                         chunkId: chunk.id,
@@ -135,9 +136,14 @@ async function handleDeployment(deployment) {
     const repoUrl = deployment.repoUrl;
     const branch = deployment.branch;
     const chunkId = deployment.chunkId;
+    // Get subdomain from deployment (e.g., 'navy9' for navy9.harbornex.dev)
+    const subdomain = deployment.subdomain || null;
 
     console.log(chalk.cyan('  Repo: ' + repoUrl));
     console.log(chalk.cyan('  Branch: ' + branch));
+    if (subdomain) {
+        console.log(chalk.cyan('  Subdomain: ' + subdomain + '.harbornex.dev'));
+    }
 
     try {
         // Update status to 'deploying'
@@ -156,11 +162,11 @@ async function handleDeployment(deployment) {
         }
         console.log(chalk.green('Detected: ' + projectInfo.type));
 
-        // Run the project
+        // Run the project (pass subdomain for custom URL)
         console.log(chalk.yellow('Building and starting...'));
         const result = await runProject(projectDir, projectInfo, function (msg) {
             console.log(chalk.dim('  ' + msg));
-        });
+        }, subdomain);
 
         console.log(chalk.green('App running on port ' + result.port));
         console.log(chalk.green('Tunnel: ' + result.url));

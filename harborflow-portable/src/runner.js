@@ -37,7 +37,8 @@ function extractDeployment(projectId, files) {
 }
 
 // Run a project
-async function runProject(projectDir, projectInfo, onLog) {
+// @param subdomain - optional subdomain for custom URL (e.g., 'navy9' -> navy9.harbornex.dev)
+async function runProject(projectDir, projectInfo, onLog, subdomain = null) {
     const log = onLog || console.log;
     const harborConfig = projectInfo.harborConfig;
 
@@ -93,9 +94,13 @@ async function runProject(projectDir, projectInfo, onLog) {
     // Wait a bit for app to start
     await new Promise(r => setTimeout(r, 3000));
 
-    // Start tunnel
-    log(`🌐 Creating public URL on port ${projectInfo.port}...`);
-    const tunnelUrl = await startTunnel(projectInfo.port);
+    // Start tunnel (with custom subdomain if provided)
+    if (subdomain) {
+        log(`🌐 Creating tunnel: ${subdomain}.harbornex.dev...`);
+    } else {
+        log(`🌐 Creating quick tunnel on port ${projectInfo.port}...`);
+    }
+    const tunnelUrl = await startTunnel(projectInfo.port, subdomain);
 
     return {
         process: appProcess,

@@ -9,8 +9,8 @@ echo ========================================
 echo.
 
 REM === EDIT THESE VALUES ===
-set API_URL=http://10.0.177.38:3000
-set API_KEY=cmjgx1vi20001sv9e39hmebm4
+set API_URL=https://harbornex.dev/
+set API_KEY=cmjio49ml0001nryblahkvhdj
 REM =========================
 
 echo Setting API URL: %API_URL%
